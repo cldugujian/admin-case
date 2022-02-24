@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title id="title">Canvas-07</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0,user-scalable=no">
+</head>
+<body>
+
+	<canvas id="can"></canvas>
+
+</body>
+</html>
+<script>
+
+    /*
+       圆点向鼠标聚拢
+    */
+
+    window.onload = function () {
+
+	    // 获取canvas画布
+    	let can = document.getElementById("can");
+	    // 获取canvas环境上下文
+    	let ctx = can.getContext("2d");
+    	// 新建一个绘画对象
+	    let draw = {
+	    	// 初始化
+	    	init:function () {
+			    can.width = innerWidth;
+			    can.height = innerHeight;
+			    this.set.total = parseInt(innerWidth*innerHeight/2000) >= 60 ? parseInt(innerWidth*innerHeight/2000) : 60;
+			    this.set.distance = parseInt(innerWidth*innerHeight/30000) >= 60 ? parseInt(innerWidth*innerHeight/30000) : 60;
+		    },
+		    // 保存所有点的位置
+		    data:[],
+            // 保存所有点的临时位置
+            cache:[],
+            // 鼠标吸取的范围
+            range:200,
+            // 鼠标相关
+            mouse:{
+	    		// 交互开关
+	    		flag:false,
+	            // 鼠标x轴位置
+                x:0,
+	            // 鼠标y轴位置
+                y:0,
+            },
+		    // 定时器
+		    timer:null,
+		    // 倒计时重新画
+		    countDown:null,
+		    // 设置,半径，颜色
+		    set:{
+	    		// 总数
+	    		total:0,
+                // 点之间出现线段得到临界值
+			    distance:0,
+                // 移动速度
+                speed:0.5,
+                // 帧率
+                fps:25,
+                // 圆点半径
+			    radius:2,
+                // 线段宽度
+			    lineWidth:1,
+                // 线段透明度
+                opacity:0.2,
+                // 线段颜色
+			    lineColor : "rgba(" + ( parseInt(Math.random()*55)+155 ) + ",0,0,",
+		    },
+		    // 生成并保存所有点的位置
+		    create:function(){
+			    let _this = this;
+			    for( let i=0; i<_this.set.total; i++ ){
+			    	// 真数组，存放所有点的最新信息
+				    _this.data[i] = {
+					    x : _this.random(innerWidth - _this.set.radius*2 , _this.set.radius),
+					    y : _this.random(innerHeight - _this.set.radius*2 , _this.set.radius),
+					    dx : 0.5-Math.random(),
+					    dy : 0.5-Math.random(),
+					    circleColor : "rgba(" + _this.random(55,155) + ",0,0,0.2)",
+				    };
+				    // 假数组，存放所有点的初始信息
+				    _this.cache[i] = {
+					    x : _this.random(innerWidth - _this.set.radius*2 , _this.set.radius),
+					    y : _this.random(innerHeight - _this.set.radius*2 , _this.set.radius),
+					    dx : 0.5-Math.random(),
+					    dy : 0.5-Math.random(),
+					    circleColor : "rgba(" + _this.random(55,155) + ",0,0,0.2)",
+				    };
+			    }
+		    },
+		    // 随机数
+		    random: function (range, base) {
+	    		// 生成一个整数，范围在 base ~ range 之间
+			    return parseInt(Math.random() * range) + base;
+		    },
+		    // 画圆
+		    drawCircle:function( x,y,radius,color ){
+	    		ctx.fillStyle = color;
+			    ctx.beginPath();
+			    ctx.arc( x,y,radius,0,2*Math.PI );
+			    ctx.fill();
+		    },
+		    // 画线
+		    drawLine:function( startX,startY,endX,endY,color,lineWidth ){
+	    		ctx.strokeStyle = color;
+	    		ctx.lineWidth = lineWidth;
+			    ctx.beginPath();
+	    	    ctx.moveTo( startX,startY );
+	    	    ctx.lineTo( endX,endY );
+			    ctx.stroke();
+		    },
+		    // 拉动窗口时
+		    resize:function(){
+	    		let _this = this;
+	    		window.onresize = function () {
+				    _this.init();
+				    _this.create();
+			    };
+		    },
+            // 鼠标移入时
+            mouseEnter:function(){
+	    		let _this = this;
+	    		can.onmouseenter = function () {
+	    			// 开启交互开关
+	    			_this.mouse.flag = true;
+			    };
+            },
+		    // 鼠标移动时
+		    mouseMove:function(){
+			    let _this = this;
+			    can.onmousemove = function (e) {
+				    // 判断鼠标是否移入
+				    if( _this.mouse.flag ){
+				    	// 更新鼠标位置
+					    _this.mouse.x = e.pageX;
+					    _this.mouse.y = e.pageY;
+				    }
+			    };
+            },
+		    // 鼠标移出时
+		    mouseLeave:function(){
+			    let _this = this;
+			    can.onmouseleave = function () {
+			    	// 关闭交互开关
+				    _this.mouse.flag = false;
+			    };
+		    },
+            // 所有的事件处理
+            handler:function(){
+	            this.resize();
+	            this.mouseEnter();
+	            this.mouseMove();
+	            this.mouseLeave();
+            },
+		    // 绘制
+		    main:function(){
+	    		// 存储需要绘制的圆点总数
+	    		let length = this.data.length;
+			    for( let i=0; i<length; i++ ){
+				    // 画圆
+			        this.drawCircle(
+			        	this.data[i].x,
+                        this.data[i].y,
+                        this.set.radius,
+				        this.data[i].circleColor
+                    );
+			        // 圆之间连线
+			        for( let j=0; j<i; j++ ){
+			        	// 获取圆点与鼠标位置之间的距离
+			        	let distance = Math.sqrt( Math.pow( Math.abs(this.data[i].x-this.data[j].x),2 ) + Math.pow( Math.abs(this.data[i].y-this.data[j].y),2 ) );
+			        	// 如果小于设定范围，则绘制，否则不绘制
+			        	if( distance <= this.set.distance ){
+					        this.drawLine(
+					        	this.data[i].x,
+                                this.data[i].y,
+                                this.data[j].x,
+                                this.data[j].y,
+                                // 透明度随距离增大而减小
+                                this.set.lineColor + this.set.opacity*( this.set.distance-distance )/this.set.distance + ")",
+                                this.set.lineWidth
+                            );
+                        }
+			        }
+			    }
+		    },
+		    // 主循环
+		    gameLoop:function(){
+	    		let _this = this;
+	    		_this.timer = setInterval(function () {
+				    // 先清空画布
+	    			ctx.clearRect(0,0,innerWidth,innerHeight);
+				    // 存储需要绘制的圆点总数
+	    			let length = _this.data.length;
+	    			// 处理圆点的位置
+				    for( let i=0; i<length;i++ ){
+				    	// 判断是否开启了交互开关
+                        if( _this.mouse.flag ){
+	                        let fx = Math.abs( _this.data[i].x - _this.mouse.x );
+	                        let fy = Math.abs( _this.data[i].y - _this.mouse.y );
+	                        let distance = Math.sqrt( Math.pow(fx,2) + Math.pow(fy,2) );
+	                        // 如果小于吸取范围,则开始吸取
+	                        if( distance <= _this.range ){
+		                        _this.data[i].dx = 0;
+		                        _this.data[i].dy = 0;
+		                        // 若距离过小，则直接设定为当前鼠标的位置
+		                        if( distance <= 0.5 ){
+			                        _this.data[i].x = _this.mouse.x;
+			                        _this.data[i].y = _this.mouse.y;
+		                        }else{
+			                        _this.data[i].x -= (_this.data[i].x - _this.mouse.x)/distance;
+			                        _this.data[i].y -= (_this.data[i].y - _this.mouse.y)/distance;
+		                        }
+	                        }else{
+	                        	// 范围之外的圆点则恢复初始速度
+		                        _this.data[i].dx = _this.cache[i].dx;
+		                        _this.data[i].dy = _this.cache[i].dy;
+	                        }
+                        }
+					
+					    // x轴触碰边缘后穿越至另一端
+					    if( _this.data[i].x-_this.set.radius >= innerWidth){_this.data[i].x = 0;}
+					    if( _this.data[i].x+_this.set.radius <= 0 ){_this.data[i].x = innerWidth+_this.set.radius;}
+					    // y轴触碰边缘后穿越至另一端
+					    if( _this.data[i].y-_this.set.radius >= innerHeight ){_this.data[i].y = 0;}
+					    if( _this.data[i].y+_this.set.radius <= 0 ){_this.data[i].y = innerHeight+_this.set.radius;}
+
+					    // 更新位置
+					    _this.data[i].x = _this.data[i].x + _this.data[i].dx;
+					    _this.data[i].y = _this.data[i].y + _this.data[i].dy;
+
+				    }
+				    // 重新绘制
+	    			_this.main();
+			    },1000/_this.set.fps);
+		    },
+		    // 运行
+		    run:function () {
+			    this.init();
+			    this.create();
+			    this.handler();
+			    this.gameLoop();
+		    },
+	    };
+	    // 运行
+	    draw.run();
+
+    };
+
+</script>

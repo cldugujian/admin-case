@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test</title>
+
+    <meta name="viewport" content="user-scalable=no">
+    <link rel="stylesheet" href="styles/reset.css">
+    <link rel="stylesheet" href="styles/pages-base.css">
+    <link rel="stylesheet" href="styles/pages-javascript.css">
+    <link rel="stylesheet" href="styles/common.css">
+</head>
+<body class="oh">
+
+    <div class="test-44-option">
+        <ul class="test-44-zoom clear_fix"></ul>
+        <ul class="test-44-size clear_fix"></ul>
+    </div>
+
+    <div class="test-44">
+        <img src="images/image-20.jpeg">
+    </div>
+
+</body>
+</html>
+<script src="scripts/base.js"></script>
+<script>
+
+    window.onload = function () {
+
+        // 放大镜数据
+        var rate,imgFrameWidth;
+        var zoomData = [ "1.0X" , "1.5X" , "2.0X" , "2.5X" , "3.0X" , "3.5X" , "4.0X" ];
+        var sizeData = [ "小号" , "中号" , "大号" , "特大号" ];
+
+        // 放大镜元素
+        var zoom = document.getElementsByClassName("test-44-zoom")[0];
+        var size = document.getElementsByClassName("test-44-size")[0];
+
+        // 倍率选项
+        for( var i=0; i<zoomData.length; i++ ){
+            var zoomLi = document.createElement("li");
+            zoom.appendChild(zoomLi);
+            zoomLi.innerHTML = zoomData[i];
+            zoomLi.index = i;
+            zoomLi.onclick = function () {
+                zoomRemoveClass();
+                this.className += "test-44-active";
+                rate = parseFloat( this.innerText );
+                init();
+            }
+        }
+
+        // 尺寸选项
+        for( i=0; i<sizeData.length; i++ ){
+            var sizeLi = document.createElement("li");
+            size.appendChild(sizeLi);
+            sizeLi.innerHTML = sizeData[i];
+            sizeLi.index = i;
+            sizeLi.onclick = function () {
+                sizeRemoveClass();
+                this.className += "test-44-active";
+                imgFrameWidth = ( this.index+1 )*100;
+                init();
+            }
+        }
+
+        // 获取外框、目标图片以及图片地址
+        var box = document.getElementsByClassName("test-44")[0];
+        var targetImg = document.getElementsByTagName("img")[0];
+        var imgSrc = targetImg.src;
+
+        // 获取图片宽度
+        var imgWidth = parseFloat( getStyle(targetImg,"width") );
+        console.log(imgWidth);
+
+        // 创建放大镜并追加到外框中
+        var imgFrame = document.createElement("div");
+        imgFrame.className = "test-44-frame";
+        var imgDul = document.createElement("img");
+        imgFrame.appendChild(imgDul);
+        box.appendChild(imgFrame);
+
+        // 设置放大镜框内的图片宽度与地址
+        imgDul.src = imgSrc;
+
+        // 设置开关和位置
+        var flag,x=0,y=0;
+
+        // 初始化（倍率1.5X，放大镜200px）
+        rate=1.5;
+        imgFrameWidth = 200;
+        zoom.getElementsByTagName("li")[1].className = "test-44-active";
+        size.getElementsByTagName("li")[1].className = "test-44-active";
+        init();
+	
+	    box.onmouseenter = function(){
+		    flag = true;
+	    };
+	    
+        box.onmousemove = function (e) {
+            if( flag ){
+                // 显示放大镜
+                imgFrame.style.display = "block";
+                // 获取鼠标位置
+                x = e.pageX;
+                y = e.pageY;
+                // 放大镜框的位置
+                imgFrame.style.left = x + "px";
+                imgFrame.style.top = y + "px";
+                // 放大镜框内图片的位置
+	            imgFrame.scrollLeft = rate*(x-box.offsetLeft) - imgFrameWidth/2;
+	            imgFrame.scrollTop = rate*(y-box.offsetTop) - imgFrameWidth/2;
+            }
+        };
+
+        box.onmouseout = function () {
+            // 隐藏放大镜
+            imgFrame.style.display = "none";
+            // 关闭开关
+            flag = false;
+        };
+
+        // 初始化
+        function init() {
+            // 放大镜框内图片宽度
+            imgDul.style.width = imgWidth*rate + "px";
+            // 放大镜设置宽高
+            imgFrame.style.width = imgFrameWidth + "px";
+            imgFrame.style.height = imgFrameWidth + "px";
+        }
+
+        // 所有倍率移除class
+        function zoomRemoveClass() {
+            for( var j=0; j<zoomData.length; j++ ){
+                zoom.getElementsByTagName("li")[j].className = "";
+            }
+        }
+
+        // 所有尺寸移除class
+        function sizeRemoveClass() {
+            for( var j=0; j<sizeData.length; j++ ){
+                size.getElementsByTagName("li")[j].className = "";
+            }
+        }
+
+    };
+
+</script>

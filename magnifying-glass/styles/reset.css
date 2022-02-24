@@ -1,0 +1,73 @@
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+button,input,select,option,textarea,
+header, nav, article, section, aside, footer,canvas{
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    color:inherit;
+    list-style: none;
+    font-size: initial;
+    font-style: initial;
+    font-weight: initial;
+    background: transparent;
+    line-height:inherit;
+    text-decoration: none;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    vertical-align: initial;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    font-family:"Microsoft YaHei",Helvetica,Arial sans-serif;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    -webkit-border-radius:0;
+    -moz-border-radius:0;
+    border-radius:0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    resize: none;
+}
+i,header,nav,article,section,aside,footer,video, input, button, textarea,canvas{
+    display: block;
+}
+button{
+    box-shadow: none;
+    background:none;
+    cursor: pointer;
+}
+table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: "";
+}
+blockquote, q {
+    quotes: "" "";
+}
+img{
+    max-width: 100%;
+    display: block;
+}
+a{
+    display: inherit;
+    cursor:pointer;
+    text-decoration: none;
+}
